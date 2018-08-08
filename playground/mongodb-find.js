@@ -38,10 +38,7 @@ MongoClient.connect('mongodb://localhost:27017', (err, client) => {
     console.log('Unable to find collection', err);
   });
 
-
-
-
-
+  // Find user by name
   db.collection('Users').find({name: 'Fred'}).toArray().then((docs) => {
     console.log(JSON.stringify(docs, undefined, 2));
   }, (err) => {
