@@ -45,13 +45,5 @@ MongoClient.connect('mongodb://localhost:27017', (err, client) => {
     console.log('Unable to find collection', err);
   });
 
-
-
-
-
-
-
-
-
   client.close(); // Closes the connection
 });
