@@ -16,23 +16,25 @@ var app = express();
 // Configure the middleware
 app.use(bodyParser.json());
 
+// POST /todos
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text
   });
 
-  todo.save().then((doc) => {
-    res.send(doc);
-  }, (err) => {
-    res.status(400).send(err);
+  todo.save().then((todo) => {
+    res.send(todo);
+  }).catch((err) => {
+    res.status(400).send();
   });
 });
 
+// GET /todos
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});  // Wrap in an object to allow future expansion
-  }, (e) => {
-    res.status(400).send(err);
+  }).catch((err) => {
+    res.status(400).send();
   });
 });
 
@@ -52,6 +54,7 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
+// DELETE /todos
 app.delete('/todos/:id', (req, res) => {
   var id = req.params.id;
   if (!ObjectID.isValid(id)) {
@@ -68,6 +71,7 @@ app.delete('/todos/:id', (req, res) => {
   });
 });
 
+// PATCH /todos
 app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
@@ -90,6 +94,21 @@ app.patch('/todos/:id', (req, res) => {
     res.send({todo});
   }).catch((err) => {
     res.status(400).send();
+  });
+});
+
+// POST /users
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  })
+  .catch((err) => {
+    res.status(400).send(err);
   });
 });
 
