@@ -41,7 +41,7 @@ UserSchema.methods.toJSON = function() {
 };
 
 UserSchema.methods.generateAuthToken = function() {
-    var user = this;  // Makes clear what we are manipulating
+    var user = this;  // Binds to individual document
 
     var access = 'auth';
     var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
@@ -53,6 +53,25 @@ UserSchema.methods.generateAuthToken = function() {
     return user.save().then(() => {
       return token;
     });
+};
+
+UserSchema.statics.findByToken = function(token) {
+  var User = this;  // Model as the 'this' binding
+  var decoded;
+
+  try {
+    // Will throw an error if cannot verify
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  // Return promise for chaining
+  return User.findOne({
+    _id: decoded._id,
+    'tokens.token': token,  // query nested document as 'dot' in value
+    'tokens.access': 'auth'
+  });
 };
 
 var User = mongoose.model('User', UserSchema);
