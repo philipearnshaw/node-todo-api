@@ -1,5 +1,8 @@
 const {SHA256} = require('crypto-js');
-
+const bcrypt = require('bcryptjs');
+// ----------------------------------------------
+// Using crypto
+// ----------------------------------------------
 var message = 'I am user number 3';
 var hash = SHA256(message).toString();
 
@@ -25,3 +28,21 @@ if (resultHash === token.hash) {
 } else {
   console.log('Data was changed');
 }
+
+// ----------------------------------------------
+// Using bcrypt
+// ----------------------------------------------
+var password = '123abc!';
+bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.hash(password, salt, (err, hash) => {
+    console.log('password', password);
+    console.log('salt', salt);
+    console.log('hash', hash);
+  });
+});
+
+var hashedPassword = '$2a$10$U0BzEfoMofYKkgi3/KbYd.2SR6FtCjt1rhiszW3cAdEYC1hnnnFXO';
+bcrypt.compare(password, hashedPassword, (err, res) => {
+  console.log(err);
+  console.log(res);
+});
