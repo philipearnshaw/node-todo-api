@@ -45,7 +45,7 @@ UserSchema.methods.generateAuthToken = function() {
     var user = this;  // Binds to individual document
 
     var access = 'auth';
-    var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+    var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     // Don't use push as is not consistent across Mongo versions.
     user.tokens = user.tokens.concat([{access, token}]);
@@ -72,7 +72,7 @@ UserSchema.statics.findByToken = function(token) {
 
   try {
     // Will throw an error if cannot verify
-    decoded = jwt.verify(token, 'abc123');
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (e) {
     return Promise.reject();
   }
